@@ -60,7 +60,7 @@ function Axis(props) {
 }
 
 function Legend(props) {
-  const { species, setSpecies } = props;
+  const { species, setSpecies, w, h, margin } = props;
 
   const changeFlag = (index) => {
     setSpecies(species.map((item, j) => {
@@ -127,7 +127,13 @@ function ScatterPlot(props) {
         h={h}
         margin={margin}
       />
-      <Legend species={species} setSpecies={setSpecies}></Legend>
+      <Legend
+        species={species}
+        setSpecies={setSpecies}
+        w={w}
+        h={h}
+        margin={margin}
+      />
       <g transform='translate(100,500) scale(1,-1)'>
         {data.map((item, i) => {
           const index = species.findIndex((value) => value.name == item.species);
