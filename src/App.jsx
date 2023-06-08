@@ -4,23 +4,23 @@ import * as d3 from "d3";
 function Select(props) {
   const { axisData, setHorizontal, setVertical, horizontalAxis, verticalAxis } = props;
 
-  const changeAxis = (event) => {
-    if (event.target.name == "horizontal") {
+  const handleChangeAxis = (event) => {
+    if (event.target.name === "horizontal") {
       setHorizontal(event.target.value);
-    } else if (event.target.name == "vertical") {
+    } else if (event.target.name === "vertical") {
       setVertical(event.target.value);
     }
   }
 
   return <div>
     <h2>Horizontal Axis</h2>
-    <select name="horizontal" defaultValue={horizontalAxis} onChange={changeAxis}>
+    <select name="horizontal" defaultValue={horizontalAxis} onChange={handleChangeAxis}>
       {axisData &&
         axisData.map((item, i) => <option key={i}>{item}</option>)
       }
     </select>
     <h2>Vertical Axis</h2>
-    <select name="vertical" defaultValue={verticalAxis} onChange={changeAxis}>
+    <select name="vertical" defaultValue={verticalAxis} onChange={handleChangeAxis}>
       {axisData &&
         axisData.map((item, i) => <option key={i}>{item}</option>)
       }
@@ -60,7 +60,7 @@ function Axis(props) {
 }
 
 function Legend(props) {
-  const { species, setSpecies, w, h, margin } = props;
+  const { species, setSpecies, w, margin } = props;
 
   const changeFlag = (index) => {
     setSpecies(species.map((item, j) => {
@@ -79,7 +79,7 @@ function Legend(props) {
         return <g transform={`translate(${w - margin},${i * 30 + margin})`} key={i}>
           <rect x="0" y="0" width="10" height="10" fill={item.color}></rect>
           <text x="15" dominantBaseline="central" onClick={() => changeFlag(i)}
-            style={{ cursor: "pointer" }}>{item.name}</text>
+            style={{ cursor: "pointer", userSelect: "none" }}>{item.name}</text>
         </g>
       })
     }
@@ -104,7 +104,7 @@ function ScatterPlot(props) {
 
   useEffect(() => {
     const array = Array.from(new Set(data.map(item => item.species)));
-    setSpecies(array.map((item, i) => {
+    setSpecies(array.map((item) => {
       return {
         name: item,
         color: color(item),
@@ -114,45 +114,59 @@ function ScatterPlot(props) {
   }, [data]);
 
   return <div>
-    <h1>Scatter Plot of Iris Flower Dataset</h1>
+    <div>
+      <h1>Scatter Plot of Iris Flower Dataset</h1>
 
-    <Select axisData={axisData} horizontalAxis={horizontalAxis} verticalAxis={verticalAxis} setHorizontal={setHorizontal} setVertical={setVertical} ></Select>
-    <svg width={w} height={h}>
-      <Axis
-        xScale={xScale}
-        yScale={yScale}
+      <Select
+        axisData={axisData}
         horizontalAxis={horizontalAxis}
         verticalAxis={verticalAxis}
-        w={w}
-        h={h}
-        margin={margin}
+        setHorizontal={setHorizontal}
+        setVertical={setVertical}
       />
-      <Legend
-        species={species}
-        setSpecies={setSpecies}
-        w={w}
-        h={h}
-        margin={margin}
-      />
-      <g transform='translate(100,500) scale(1,-1)'>
-        {data.map((item, i) => {
-          const index = species.findIndex((value) => value.name == item.species);
-          if (index != -1 && species[index].flag) {
-            return (
-              <circle
-                cx={xScale(item[horizontalAxis])}
-                cy={yScale(item[verticalAxis])}
-                fill={species[index].color}
-                r="5"
-                style={{ transitionDuration: "500ms" }}
-                key={i}
-              />
-            );
-          }
-          return null;
-        })}
-      </g>
-    </svg>
+    </div>
+    <div>
+      <svg width={w} height={h}>
+        <Axis
+          xScale={xScale}
+          yScale={yScale}
+          horizontalAxis={horizontalAxis}
+          verticalAxis={verticalAxis}
+          w={w}
+          h={h}
+          margin={margin}
+        />
+        <Legend
+          species={species}
+          setSpecies={setSpecies}
+          w={w}
+          margin={margin}
+        />
+        <g transform='translate(100,500) scale(1,-1)'>
+          {data.map((item, i) => {
+            const index = species.findIndex((value) => value.name === item.species);
+            if (index !== -1 && species[index].flag) {
+              return (
+                <circle
+                  cx={xScale(item[horizontalAxis])}
+                  cy={yScale(item[verticalAxis])}
+                  fill={species[index].color}
+                  r="5"
+                  /* style={{ transitionDuration: "500ms" }} */
+                  style={{
+                    transitionProperty: "cx, cy",
+                    transitionDuration: "500ms"
+                  }}
+                  key={i}
+                />
+              );
+            }
+            return null;
+          })}
+        </g>
+      </svg>
+    </div>
+
   </div>
 }
 
