@@ -79,7 +79,7 @@ function Legend(props) {
         return <g transform={`translate(${w - margin},${i * 30 + margin})`} key={i}>
           <rect x="0" y="0" width="10" height="10" fill={item.color}></rect>
           <text x="15" dominantBaseline="central" onClick={() => changeFlag(i)}
-            style={{ cursor: "pointer", userSelect: "none" }}>{item.name}</text>
+            style={{ cursor: "pointer" }}>{item.name}</text>
         </g>
       })
     }
@@ -101,6 +101,7 @@ function ScatterPlot(props) {
     .domain(d3.extent(data, item => item[verticalAxis]))
     .range([0, h - margin * 2])
     .nice();
+
 
   useEffect(() => {
     const array = Array.from(new Set(data.map(item => item.species)));
